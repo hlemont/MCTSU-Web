@@ -170,18 +170,13 @@
 						dataType: 'json',
 						contentType: "application/json",
 						success: function(data){
-							let elements = document.querySelectorAll("a.personal");
-							for (let element in elements) {
-								console.log('sex');
-								console.log(element['href']);
-								if(data['login_status']){
-									element.textContent = "내 프로필";
-									element['href'] = '/profile';
-								}
-								else{
-									element.textContent = "함께할까?";
-									element['href'] = '/login.php?action=loginn';
-								}
+							if(data['login_status']) {
+								$("a.personal").text("내 프로필");
+								$("a.personal").attr("href", "/profile");
+							}
+							else {
+								$("a.personal").text("함께할까");
+								$("a.personal").attr("href", "/login.php?action=loginn");								
 							}
 						}
 					});
