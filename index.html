@@ -4,6 +4,7 @@
 	html5up.net | @ajlkn
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
+<?php session_start() ?>
 <html>
 	<head>
 		<title>Welcome to MCTSU Minecraft Server!</title>
@@ -33,7 +34,7 @@
 									</li>
 								</ul>
 							</li>
-							<li><a href="#" class="button">함께하기</a></li>
+							<li><a href="/login.php" class="button personal" >함께하기</a></li>
 						</ul>
 					</nav>
 				</header>
@@ -43,7 +44,7 @@
 					<h2>MCTSU 서버</h2>
 					<p>한국 트위치 시청자들이 만들어가는 마인크래프트 서버</p>
 					<ul class="actions special">
-						<li><a href="#" class="button primary">함께하기</a></li>
+						<li><a href="/login.php" class="button primary personal">함께하기</a></li>
 						<li><a href="#" class="button">자세히 알아보기</a></li>
 					</ul>
 				</section>
@@ -160,6 +161,27 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script>
+				$.ajax({
+					url: '/login.php',
+					type: "POST",
+					action: "check",
+					dataType: "json",
+					success: function(data){
+						if(!document.getElementsByClassName){
+							var personal = Document.getElementByClassName("personal");
+							if(data['login_status']){
+								personal.textContent = "내 프로필";
+								personal.setAttribute('href', '/profile');
+							}
+							else{
+								personal.textContent = "함께하기";
+								personal.setAttribute('href', '/login.php')
+							}
+						}
+					},  
+				});
+			</script>
 
 	</body>
 </html>
