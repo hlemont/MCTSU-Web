@@ -169,15 +169,16 @@
 						action: "check",
 						dataType: "json",
 						success: function(data){
-							if(!document.getElementsByClassName){
-								var personal = Document.getElementByClassName("personal");
-								if(data['login_status']){
-									personal.textContent = "내 프로필";
-									personal.setAttribute('href', '/profile');
-								}
-								else{
-									personal.textContent = "함께하기";
-									personal.setAttribute('href', '/login.php?action=login')
+							var elements = document.getElementsByClassName("personal");
+								for (var element in elements) {
+									if(data['login_status']){
+										element.textContent = "내 프로필";
+										element.setAttribute('href', '/profile');
+									}
+									else{
+										element.textContent = "함께할까?";
+										element.setAttribute('href', '/login.php?action=login')
+									}
 								}
 							}
 						}
