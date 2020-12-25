@@ -30,7 +30,7 @@ if(get('code')){
 }
 
 // login
-if(!get('code')){
+if(!get('action')){
 
     $params = array(
         'client_id' => discord_oauth['client_id'],
