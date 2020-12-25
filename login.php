@@ -26,7 +26,7 @@ if(get('code')){
     ));
     $_SESSION['access_token'] = $token->access_token;
 
-    header('Location: ' . $_SERVER['HTTP_HOST']);
+    header('Location: ' . 'https://web.mctsu.kr/');
 }
 
 // login
@@ -34,7 +34,7 @@ if(!get('action')){
 
     $params = array(
         'client_id' => discord_oauth['client_id'],
-        'redirect_uri' => '',
+        'redirect_uri' => 'https://web.mctsu.kr/login.php',
         'response_type' => 'code',
         'scope' => 'identify guilds'
     );
