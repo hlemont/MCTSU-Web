@@ -14,8 +14,13 @@ $apiURLBase = 'https://discord.com/api/users/@me';
 
 session_start();
 
+$_SESSION['current_page'] = $_SERVER['REQUEST_URI']
 
 if($_SERVER['REQUEST_METHOD'] == 'GET'){
+    if(isset('location')){
+        $_SESSION['location'] = get('location');
+    }
+
     // when redirected from discord oauth authorize
     if(get('code')){
 
@@ -29,7 +34,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
         ));
         $_SESSION['access_token'] = $token->access_token;
         error_log("server requested to discord");
-        header('Location: ' . 'https://web.mctsu.kr/');
+        header('Location: ' . 'https://web.mctsu.kr/' . $_SESSION['location']);
+        unset($_SESSION['location'])
     }
 
     // login
@@ -53,9 +59,12 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
             'access_token' => $_SESSION['access_token']
         );
 
-        // Redirect the user to Discord's revoke page
-        header('Location: https://discord.com/api/oauth2/token/revoke' . '?' . http_build_query($params));
+        $token = apiRequest('https://discord.com/api/oauth2/token/revoke', array(
+            'access_token' => $_SESSION['access_token']
+        ));
+        header('Location: ' . 'https://web.mctsu.kr/' . $_SESSION['location']);
         unset($_SESSION['access_token']);
+        unset($_SESSION['location']);
         die();
     }
 	

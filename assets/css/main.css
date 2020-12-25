@@ -2466,6 +2466,16 @@
 				color: #ffffff;
 			}
 
+		.icon.notice-positive{
+			background: inherit;
+			color: #7fcdb8;
+		}
+
+		.icon.notice-negative{
+			background: inherit;
+			color: #e89980;
+		}
+
 /* Image */
 
 	.image {
@@ -3438,6 +3448,10 @@
 			color: inherit;
 		}
 
+		#cta h2{
+			font-weight: 700;
+		}
+
 		#cta form {
 			margin: 0 auto;
 			max-width: 100%;
@@ -3451,6 +3465,7 @@
 			box-shadow: none;
 			background: #fff;
 			color: #e89980;
+			text-align: center;
 		}
 
 		#cta input[type="text"],

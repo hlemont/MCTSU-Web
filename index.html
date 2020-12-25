@@ -25,7 +25,9 @@
 							<li><a href="index.html#notification">소식</a></li>
 							<li>
 								<a href="#" class="icon solid fa-angle-down">메뉴</a>
-								<ul>
+								<ul>								
+									<li><a href="index.html">MCTSU 홈</a></li>
+									<li><a href="how-to.html">가입 절차</a></li>
 									<li>
 										<a href="#">지도 웹</a>
 										<ul>
@@ -161,28 +163,8 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
-			<script>
-				$(document).ready(function(){
-					$.ajax({
-						url: 'login.php',
-						type: "GET",
-						data: {action: 'check'},
-						dataType: 'json',
-						contentType: "application/json",
-						success: function(data){
-							if(data['login_status']) {
-								$("a.personal").text("내 프로필");
-								$("a.personal").attr("href", "/profile");
-							}
-							else {
-								$("a.personal").text("함께할까");
-								$("a.personal").attr("href", "/login.php?action=loginn");								
-							}
-						}
-					});
-					console.log('asdf');
-				});
-			</script>
+			<script src="assets/js/get_status.js"></script>
+			<script>$(document).ready(check_status(refresh_button));</script>
 
 	</body>
 </html>
