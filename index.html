@@ -34,7 +34,7 @@
 									</li>
 								</ul>
 							</li>
-							<li><a href="/login.php" class="button personal" >함께하기</a></li>
+							<li><a href="/login.php?action=login" class="button personal" >함께하기</a></li>
 						</ul>
 					</nav>
 				</header>
@@ -44,7 +44,7 @@
 					<h2>MCTSU 서버</h2>
 					<p>한국 트위치 시청자들이 만들어가는 마인크래프트 서버</p>
 					<ul class="actions special">
-						<li><a href="/login.php" class="button primary personal">함께하기</a></li>
+						<li><a href="/login.php?action=login" class="button primary personal">함께하기</a></li>
 						<li><a href="#" class="button">자세히 알아보기</a></li>
 					</ul>
 				</section>
@@ -176,7 +176,7 @@
 							}
 							else{
 								personal.textContent = "함께하기";
-								personal.setAttribute('href', '/login.php')
+								personal.setAttribute('href', '/login.php?action=login')
 							}
 						}
 					},  
