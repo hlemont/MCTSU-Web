@@ -58,10 +58,9 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
         unset($_SESSION['access_token']);
         die();
     }
-    
-} else if($_SERVER['REQUEST_METHOD'] == 'POST'){
-    // check
-    if(post('action') == 'check'){
+	
+	//check
+	if(get('action') == 'check'){
         header('Content-Type: application/json');
         $data = array(
             'login_status' => array_key_exists('access_token', $_SESSION)
@@ -75,8 +74,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
         echo $json;
         die();
     }
+    
 }
-
 
 
 
@@ -107,7 +106,7 @@ function get($key, $default=NULL) {
 }
 
 function post($key, $default=NULL){
-    return array_key_exists($key, $_GET) ? $_post[$key] : $default;
+    return array_key_exists($key, $_POST) ? $_POST[$key] : $default;
 }
 
 function session($key, $default=NULL) {

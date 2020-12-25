@@ -34,7 +34,7 @@
 									</li>
 								</ul>
 							</li>
-							<li><a href="/login.php?action=login" class="button personal" >함께하기</a></li>
+							<li><a id='button_1' href="/login.php?action=login" class="button personal" >함께하기</a></li>
 						</ul>
 					</nav>
 				</header>
@@ -44,7 +44,7 @@
 					<h2>MCTSU 서버</h2>
 					<p>한국 트위치 시청자들이 만들어가는 마인크래프트 서버</p>
 					<ul class="actions special">
-						<li><a href="/login.php?action=login" class="button primary personal">함께하기</a></li>
+						<li><a id='button_2' href="/login.php?action=login" class="button primary personal">함께하기</a></li>
 						<li><a href="#" class="button">자세히 알아보기</a></li>
 					</ul>
 				</section>
@@ -163,42 +163,29 @@
 			<script src="assets/js/main.js"></script>
 			<script>
 				$(document).ready(function(){
-					$.post('/login.php', {action:'check'},
-						function(data){
-							var elements = document.getElementsByClassName("personal");
-							console.log('sex');
-							for (var element in elements) {
-								
-								if(data['login_status']){
-									element.textContent = "내 프로필";
-									element.setAttribute('href', '/profile');
-								}
-								else{
-									element.textContent = "함께할까?";
-									element.setAttribute('href', '/login.php?action=login')
-								}
-							}
-						});
-					/*$.ajax({
-						url: '/login.php',
-						type: "POST",
-						data: jQuery.param({action: 'check', }),
+					$.ajax({
+						url: 'login.php',
+						type: "GET",
+						data: {action: 'check'},
 						dataType: 'json',
+						contentType: "application/json",
 						success: function(data){
-							var elements = document.getElementsByClassName("personal");
-							for (var element in elements) {
-								
+							let elements = document.querySelectorAll("a.personal");
+							for (let element in elements) {
+								console.log('sex');
+								console.log(element['href']);
 								if(data['login_status']){
 									element.textContent = "내 프로필";
-									element.setAttribute('href', '/profile');
+									element['href'] = '/profile';
 								}
 								else{
 									element.textContent = "함께할까?";
-									element.setAttribute('href', '/login.php?action=login')
+									element['href'] = '/login.php?action=loginn';
 								}
 							}
 						}
-					});*/
+					});
+					console.log('asdf');
 				});
 			</script>
 
