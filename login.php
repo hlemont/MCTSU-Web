@@ -14,62 +14,69 @@ $apiURLBase = 'https://discord.com/api/users/@me';
 
 session_start();
 
-// when redirected from discord oauth authorize
-if(get('code')){
 
-    $token = apiRequest($tokenURL, array(
-        "grant_type" => "authorization_code",
-        'client_id' => discord_oauth['client_id'],
-        'client_secret' => discord_oauth['client_secret'],
-        'redirect_uri' => 'https://web.mctsu.kr/login.php'
-        'code' => get('code')
-    ));
-    $_SESSION['access_token'] = $token->access_token;
+if($_SERVER['REQUEST_METHOD'] == 'GET'){
+    // when redirected from discord oauth authorize
+    if(get('code')){
 
-    header('Location: ' . 'https://web.mctsu.kr/');
-}
+        $token = apiRequest($tokenURL, array(
+            "grant_type" => "authorization_code",
+            'client_id' => discord_oauth['client_id'],
+            'client_secret' => discord_oauth['client_secret'],
+            'redirect_uri' => 'https://web.mctsu.kr/login.php'
+            'code' => get('code')
+        ));
+        $_SESSION['access_token'] = $token->access_token;
 
-// login
-if(!get('action')){
+        header('Location: ' . 'https://web.mctsu.kr/');
+    }
 
-    $params = array(
-        'client_id' => discord_oauth['client_id'],
-        'redirect_uri' => 'https://web.mctsu.kr/login.php',
-        'response_type' => 'code',
-        'scope' => 'identify guilds'
-    );
+    // login
+    if(get('action') == 'login'){
+
+        $params = array(
+            'client_id' => discord_oauth['client_id'],
+            'redirect_uri' => 'https://web.mctsu.kr/login.php',
+            'response_type' => 'code',
+            'scope' => 'identify guilds'
+        );
+        
+        header('Location: https://discord.com/api/oauth2/authorize' . '?' . http_build_query($params))
+        die();
+    }
+
+    // logout
+    if(get('action') == 'logout') {
+        // This must to logout you, but it didn't worked(
+
+        $params = array(
+            'access_token' => $_SESSION['access_token']
+        );
+
+        // Redirect the user to Discord's revoke page
+        header('Location: https://discord.com/api/oauth2/token/revoke' . '?' . http_build_query($params));
+        unset($_SESSION['access_token']);
+        die();
+    }
     
-    header('Location: https://discord.com/api/oauth2/authorize' . '?' . http_build_query($params))
-    die();
+} else if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    // check
+    if(post('action') == 'check'){
+        
+        $data = array(
+            'login_status' => array_key_exists('access_token', $_SESSION)
+        )
+
+        $json = json_encode($data);
+        
+        header('Content-Type: application/json');
+        echo $json;
+        die();
+    }
 }
 
-// check
-if(get('action') == 'check'){
-    
-    $data = array(
-        'login_status' => array_key_exists('access_token', $_SESSION)
-    )
 
-    $json = json_encode($data);
-    
-    header('Content-Type: application/json');
-    echo $json;
-    die();
-}
 
-// logout
-if(get('action') == 'logout') {
-    // This must to logout you, but it didn't worked(
-
-    $params = array(
-        'access_token' => $_SESSION['access_token']
-    );
-
-    // Redirect the user to Discord's revoke page
-    header('Location: https://discord.com/api/oauth2/token/revoke' . '?' . http_build_query($params));
-    unset($_SESSION['access_token']);
-    die();
-}
 
 function apiRequest($url, $post=FALSE, $headers=array()) {
     $ch = curl_init($url);
@@ -95,6 +102,10 @@ function apiRequest($url, $post=FALSE, $headers=array()) {
 
 function get($key, $default=NULL) {
     return array_key_exists($key, $_GET) ? $_GET[$key] : $default;
+}
+
+function post($key, $default=NULL){
+    return array_key_exists($key, $_GET) ? $_post[$key] : $default;
 }
 
 function session($key, $default=NULL) {
