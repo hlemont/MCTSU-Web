@@ -162,25 +162,28 @@
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 			<script>
-				$.ajax({
-					url: '/login.php',
-					type: "POST",
-					action: "check",
-					dataType: "json",
-					success: function(data){
-						if(!document.getElementsByClassName){
-							var personal = Document.getElementByClassName("personal");
-							if(data['login_status']){
-								personal.textContent = "내 프로필";
-								personal.setAttribute('href', '/profile');
-							}
-							else{
-								personal.textContent = "함께하기";
-								personal.setAttribute('href', '/login.php?action=login')
+				$(document).ready(function(){
+					$.ajax({
+						url: '/login.php',
+						type: "POST",
+						action: "check",
+						dataType: "json",
+						success: function(data){
+							if(!document.getElementsByClassName){
+								var personal = Document.getElementByClassName("personal");
+								if(data['login_status']){
+									personal.textContent = "내 프로필";
+									personal.setAttribute('href', '/profile');
+								}
+								else{
+									personal.textContent = "함께하기";
+									personal.setAttribute('href', '/login.php?action=login')
+								}
 							}
 						}
-					},  
+					});
 				});
+
 			</script>
 
 	</body>

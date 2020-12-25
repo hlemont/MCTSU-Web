@@ -62,14 +62,16 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
 } else if($_SERVER['REQUEST_METHOD'] == 'POST'){
     // check
     if(post('action') == 'check'){
-        
+        header('Content-Type: application/json');
         $data = array(
             'login_status' => array_key_exists('access_token', $_SESSION)
         );
 
         $json = json_encode($data);
-        
-        header('Content-Type: application/json');
+        if($json === false) {
+            $json = json_encode(array("jsonError", json_last-error_msg()));
+            http_response_code(500);
+        }
         echo $json;
         die();
     }
