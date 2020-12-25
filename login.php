@@ -40,8 +40,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
             'response_type' => 'code',
             'scope' => 'identify guilds'
         );
-        
-        header('Location: https://discord.com/api/oauth2/authorize' . '?' . http_build_query($params))
+        error_log('login executed');
+        header('Location: https://discord.com/api/oauth2/authorize' . '?' . http_build_query($params));
         die();
     }
 
@@ -65,7 +65,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
         
         $data = array(
             'login_status' => array_key_exists('access_token', $_SESSION)
-        )
+        );
 
         $json = json_encode($data);
         
