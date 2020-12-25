@@ -1,6 +1,6 @@
 function refresh_button(data){
     var params = {
-        location: location.pathname
+        location: location.pathname.substr(1)
     }
 
     if(data['login_status']) {
@@ -10,7 +10,7 @@ function refresh_button(data){
     else {
         params['action'] = 'login';
         $("a.personal").text("함께하기");
-        $("a.personal").attr("href", "/login.php?" + $.param(params).substr(1));								
+        $("a.personal").attr("href", "/login.php?" + $.param(params));								
     }
 }
 
