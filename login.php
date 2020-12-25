@@ -24,10 +24,11 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
             'client_id' => $discord_oauth['client_id'],
             'client_secret' => $discord_oauth['client_secret'],
             'redirect_uri' => 'https://web.mctsu.kr/login.php',
-            'code' => get('code')
+            'code' => get('code'),
+            'scope' => 'identify guilds'
         ));
         $_SESSION['access_token'] = $token->access_token;
-
+        error_log("server requested to discord");
         header('Location: ' . 'https://web.mctsu.kr/');
     }
 
