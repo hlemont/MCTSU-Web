@@ -166,19 +166,19 @@
 					$.ajax({
 						url: '/login.php',
 						type: "POST",
-						action: "check",
-						dataType: "json",
+						data: jQuery.param({action: 'check', }),
+						dataType: 'json',
 						success: function(data){
 							var elements = document.getElementsByClassName("personal");
-								for (var element in elements) {
-									if(data['login_status']){
-										element.textContent = "내 프로필";
-										element.setAttribute('href', '/profile');
-									}
-									else{
-										element.textContent = "함께할까?";
-										element.setAttribute('href', '/login.php?action=login')
-									}
+							for (var element in elements) {
+								
+								if(data['login_status']){
+									element.textContent = "내 프로필";
+									element.setAttribute('href', '/profile');
+								}
+								else{
+									element.textContent = "함께할까?";
+									element.setAttribute('href', '/login.php?action=login')
 								}
 							}
 						}
