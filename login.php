@@ -21,9 +21,9 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
 
         $token = apiRequest($tokenURL, array(
             "grant_type" => "authorization_code",
-            'client_id' => discord_oauth['client_id'],
-            'client_secret' => discord_oauth['client_secret'],
-            'redirect_uri' => 'https://web.mctsu.kr/login.php'
+            'client_id' => $discord_oauth['client_id'],
+            'client_secret' => $discord_oauth['client_secret'],
+            'redirect_uri' => 'https://web.mctsu.kr/login.php',
             'code' => get('code')
         ));
         $_SESSION['access_token'] = $token->access_token;
@@ -35,12 +35,11 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
     if(get('action') == 'login'){
 
         $params = array(
-            'client_id' => discord_oauth['client_id'],
+            'client_id' => $discord_oauth['client_id'],
             'redirect_uri' => 'https://web.mctsu.kr/login.php',
             'response_type' => 'code',
             'scope' => 'identify guilds'
         );
-        error_log('login executed');
         header('Location: https://discord.com/api/oauth2/authorize' . '?' . http_build_query($params));
         die();
     }
