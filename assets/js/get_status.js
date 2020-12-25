@@ -15,6 +15,7 @@ function refresh_button(data){
 }
 
 function refresh_icon_discord(data){
+    console.log(data['login_status']);
     if(data['login_status']){
         $("i.discord-status").removeClass('fa-times-circle notice-negative')
         $("i.discord-status").addClass('fa-check-circle notice-positive');

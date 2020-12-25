@@ -14,10 +14,10 @@ $apiURLBase = 'https://discord.com/api/users/@me';
 
 session_start();
 
-$_SESSION['current_page'] = $_SERVER['REQUEST_URI']
+$_SESSION['current_page'] = $_SERVER['REQUEST_URI'];
 
 if($_SERVER['REQUEST_METHOD'] == 'GET'){
-    if(isset('location')){
+    if(isset($_SESSION['location'])){
         $_SESSION['location'] = get('location');
     }
 
@@ -35,7 +35,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
         $_SESSION['access_token'] = $token->access_token;
         error_log("server requested to discord");
         header('Location: ' . 'https://web.mctsu.kr/' . $_SESSION['location']);
-        unset($_SESSION['location'])
+        unset($_SESSION['location']);
     }
 
     // login
