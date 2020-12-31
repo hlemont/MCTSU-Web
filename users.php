@@ -26,7 +26,7 @@ function mc_name_to_uuid($mc_name){
         $res = json_decode($response);
         $result = array(
             status => 'success',
-            uuid => $res->id;
+            uuid => $res->id
         );
 
         return $result;
@@ -49,7 +49,7 @@ function create_accounts(){
     $result = create_table($con, 'accounts');
     close_sql($con);
 
-    return $result
+    return $result;
 }
 
 // user operation

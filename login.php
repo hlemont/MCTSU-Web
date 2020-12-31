@@ -28,8 +28,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
     }
 
     // when redirected back from discord oauth authorize
-    if(isset($_GET['code']){
-        request_token(get('code');
+    if(isset($_GET['code'])){
+        request_token($_GET['code']);
 
         $user = discord_get_user();
 
@@ -131,7 +131,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
 
 function redirect_authorize(){
     $params = array(
-        'client_id' => $discord_oauth['client_id'],
+        'client_id' => $GLOBALS['discord_oauth']['client_id'],
         'redirect_uri' => 'https://web.mctsu.kr/login.php',
         'response_type' => 'code',
         'scope' => 'identify guilds'
@@ -142,8 +142,8 @@ function redirect_authorize(){
 function request_token($code){
     $token = apiRequest($tokenURL, array(
         "grant_type" => "authorization_code",
-        'client_id' => $discord_oauth['client_id'],
-        'client_secret' => $discord_oauth['client_secret'],
+        'client_id' => $GLOBALS['discord_oauth']['client_id'],
+        'client_secret' => $GLOBALS['discord_oauth']['client_secret'],
         'redirect_uri' => 'https://web.mctsu.kr/login.php',
         'code' => $code,
         'scope' => 'identify guilds'
@@ -154,8 +154,8 @@ function request_token($code){
 function refresh_token($refresh_token){
     $token = apiRequest($tokenURL, array(
         "grant_type" => "refresh_token",
-        'client_id' => $discord_oauth['client_id'],
-        'client_secret' => $discord_oauth['client_secret'],
+        'client_id' => $GLOBALS['discord_oauth']['client_id'],
+        'client_secret' => $GLOBALS['discord_oauth']['client_secret'],
         'refresh_token' => $refresh_token,
         'redirect_uri' => 'https://web.mctsu.kr/login.php',
         'scope' => 'identify guilds'
@@ -163,7 +163,7 @@ function refresh_token($refresh_token){
 }
 
 function discord_get_user(){
-    apiRequest($apiURLBase . 'users/@me');
+    apiRequest($GLOBALS['apiURLBase'] . 'users/@me');
 }
 
 function apiRequest($url, $post=FALSE, $headers=array()) {

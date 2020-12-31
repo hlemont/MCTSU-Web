@@ -2,7 +2,7 @@
 $database_host = "localhost";
 $database_username = "hlemont01";
 $database_password = "4x104ObktXor6wmH";
-$database_db = "users"
+$database_db = "users";
 
 function connect_sql(){
     $con = mysqli_connect($GLOBALS["database_host"], $GLOBALS["database_username"], $GLOBALS["database_password"], $GLOBALS["database_db"]);
@@ -20,7 +20,7 @@ function close_sql($con){
 }
 
 function enter_query($con, $query){
-    $result = mysqli_query($con, $query)
+    $result = mysqli_query($con, $query);
     if($result){
         log("Query succeed: {$query}");
     }
@@ -135,14 +135,14 @@ function delete_record($con, $table, $conditions){
 }
 
 function select_record($con, $table, $columns=[], $conditions='', $limit=-1){
-    if(columns == NULL)){
+    if(columns == NULL){
         $column_formatted = '*';
     }
     else{
         $column_formatted = implode(", ", $columns);
     }
 
-    $query = "SELECT {$column_formatted} FROM {$table}"
+    $query = "SELECT {$column_formatted} FROM {$table}";
     if($conditions != NULL){
         $query = $query . "WHERE {$conditions} ";
     }
