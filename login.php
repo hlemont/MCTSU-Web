@@ -32,21 +32,21 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
         $token = request_token($_GET['code']);
         $user = discord_get_user();
 
-        if(!exist_account($user->id)){
+        if(!exist_account($user['id'])){
             insert_account(array('id', 'discord_name', 'username', 'mc_name', 'twitch_name',  'verification_code',  'register_date'), 
-                array($user->id, $user->username, $user->username, '', '', 0, (new DateTime())->format('Y-m-d')));
+                    array($user['id'], $user['username'], $user['username'], '', '', 0, (new DateTime())->format('Y-m-d')));
         }
         else{
-            update_account($user->id, array('discord_name'), array($user->username));
+            update_account($user['id'], array('discord_name'), array($user->username));
         }
 
-        $_SESSION['id'] = $user->id;
-        $_SESSION['access_token'] = $token->access_token;
+        $_SESSION['id'] = $user['id'];
+        $_SESSION['access_token'] = $token['access_token'];
         $expire_date = new DateTime();
-        $term = new DateInterval("PT{$token->expires_in}S");
+        $term = new DateInterval("PT{$token['expires_in']}S");
         $expire_date->add($term);
         $_SESSION['expire_date'] = $expire_date;
-        $_SESSION['refresh_token'] = $token->refresh_token;
+        $_SESSION['refresh_token'] = $token['refresh_token'];
         
         header('Location: ' . 'https://web.mctsu.kr/' . $_SESSION['location']);
         unset($_SESSION['location']);
@@ -92,22 +92,22 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
             if(array_key_exists('access_token', $_SESSION)){
                 // refresh when access token expired: expire_date is smaller than 2 day
                 $now = new DateTime();
-                $difference = (indv t)($_SESSION['expire_date']->diff($now))->format("%r%d");
+                $difference = (int)($_SESSION['expire_date']->diff($now))->format("%r%d");
                 if($difference <= 1){
                     $token = refresh_token($_SESSION['refresh_token']);
 
-                    $_SESSION['access_token'] = $token->access_token;
+                    $_SESSION['access_token'] = $token['access_token'];
                     $expire_date = new DateTime();
-                    $term = new DateInterval("PT{$token->expires_in}S");
+                    $term = new DateInterval("PT{$token['expires_in']}S");
                     $expire_date->add($term);
                     $_SESSION['expire_date'] = $expire_date;
-                    $_SESSION['refresh_token'] = $token->refresh_token;
+                    $_SESSION['refresh_token'] = $token['refresh_token'];
                 }
 
                 $user = discord_get_user();
                 $data = array(
                     'login_status' => TRUE,
-                    'username' => $user->username
+                    'username' => $user['username']
                 );
                 } else {
                 $data = array(
@@ -147,7 +147,7 @@ function request_token($code){
         'code' => $code,
         'scope' => 'identify guilds'
     ));
-    return $token
+    return $token;
 }
 
 
@@ -186,7 +186,7 @@ function apiRequest($url, $post=FALSE, $headers=array()) {
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     $response = curl_exec($ch);
-    return json_decode($response);
+    return json_decode($response, true);
 }
 
 ?>
