@@ -135,7 +135,7 @@ function delete_record($con, $table, $conditions){
 }
 
 function select_record($con, $table, $columns=[], $conditions='', $limit=-1){
-    if(columns == NULL){
+    if($columns == NULL){
         $column_formatted = '*';
     }
     else{

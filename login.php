@@ -29,11 +29,10 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
 
     // when redirected back from discord oauth authorize
     if(isset($_GET['code'])){
-        request_token($_GET['code']);
-
+        $token = request_token($_GET['code']);
         $user = discord_get_user();
 
-        if(!exist_user($user->id)){
+        if(!exist_account($user->id)){
             insert_account(array('id', 'discord_name', 'username', 'mc_name', 'twitch_name',  'verification_code',  'register_date'), 
                 array($user->id, $user->username, $user->username, '', '', 0, (new DateTime())->format('Y-m-d')));
         }
@@ -93,7 +92,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
             if(array_key_exists('access_token', $_SESSION)){
                 // refresh when access token expired: expire_date is smaller than 2 day
                 $now = new DateTime();
-                $difference = (int)($_SESSION['expire_date']->diff($now))->format("%r%d");
+                $difference = (indv t)($_SESSION['expire_date']->diff($now))->format("%r%d");
                 if($difference <= 1){
                     $token = refresh_token($_SESSION['refresh_token']);
 
@@ -140,7 +139,7 @@ function redirect_authorize(){
 }
 
 function request_token($code){
-    $token = apiRequest($tokenURL, array(
+    $token = apiRequest($GLOBALS['tokenURL'], array(
         "grant_type" => "authorization_code",
         'client_id' => $GLOBALS['discord_oauth']['client_id'],
         'client_secret' => $GLOBALS['discord_oauth']['client_secret'],
@@ -148,11 +147,12 @@ function request_token($code){
         'code' => $code,
         'scope' => 'identify guilds'
     ));
+    return $token
 }
 
 
 function refresh_token($refresh_token){
-    $token = apiRequest($tokenURL, array(
+    $token = apiRequest($GLOBALS['tokenURL'], array(
         "grant_type" => "refresh_token",
         'client_id' => $GLOBALS['discord_oauth']['client_id'],
         'client_secret' => $GLOBALS['discord_oauth']['client_secret'],
@@ -160,10 +160,11 @@ function refresh_token($refresh_token){
         'redirect_uri' => 'https://web.mctsu.kr/login.php',
         'scope' => 'identify guilds'
     ));
+    return $token;
 }
 
 function discord_get_user(){
-    apiRequest($GLOBALS['apiURLBase'] . 'users/@me');
+    return apiRequest($GLOBALS['apiURLBase'] . 'users/@me');
 }
 
 function apiRequest($url, $post=FALSE, $headers=array()) {
