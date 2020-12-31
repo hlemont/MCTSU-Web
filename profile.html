@@ -1,0 +1,120 @@
+<!DOCTYPE HTML>
+<!--
+	Alpha by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<?php session_start(); ?>
+<html>
+	<head>
+		<title>MCTSU Web</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+	</head>
+	<body class="is-preload">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+			<header id="header">
+				<h1><a href="index.html">MCTSU</a></h1>
+				<nav id="nav">
+					<ul>
+						<li><a href="index.html#interlude">홈</a></li>
+						<li>
+						<li><a class="button save-profile" ></a></li>
+					</ul>
+				</nav>
+			</header>
+
+			<!-- Main -->
+				<section id="main" class="container">
+					<header>
+						<h2>프로필</h2>
+					</header>
+					<div class="box">
+						<form onsubmit="">
+							<div class="row gtr-50">
+								<div class="off-3 col-6 off-2-mobilep col-8-mobilep">
+									<label for='username'><h3>닉네임</h3></label>
+									<input id='username' type='text' name='username', value="", placeholder="닉네임">
+								</div>
+								<div class="off-3 col-6 off-2-mobile col-8-mobilep">
+									<label for='discord_name'  style="margin-top: 3em"><h3>디스코드 닉네임</h3></label>
+									<input id='discord_name' type='text' name='discord_name', value="", placeholder="디스코드 닉네임" disabled>
+								</div>
+								<div class="off-3 col-6 off-2-mobilep col-8-mobilep">
+									<label for='username' style="margin-top: 3em"><h3>마인크래프트 닉네임</h3></label>
+									<input id='username' type='text' name='username', value="", placeholder="마인크래프트 닉네임">
+								</div>
+								<div class="off-3 col-6 off-2-mobile col-8-mobilep">
+									<label for='discord_name'  style="margin-top: 3em"><h3>트위치 이름</h3></label>
+									<input id='discord_name' type='text' name='discord_name', value="", placeholder="트위치 닉네임">
+								</div>
+							</div>
+						</form>
+					</div>
+				</section>
+
+			<!-- CTA -->
+			<section id="cta">
+
+				<h2>등록 완료 알림 받기</h2>
+				<p>입력하신 이메일 주소로 알림 메일이 발송됩니다.<br>
+				(이메일 주소는 알림 메일이 발송된 이후 파기됩니다.)</p>
+
+				<form onsubmit="email_notice">
+					<div class="row gtr-50 gtr-uniform">
+						<div class="col-8 col-12-mobilep">
+							<input type="email" name="email" id="email" placeholder="Email Address" />
+						</div>
+						<div class="col-4 col-12-mobilep">
+							<input type="submit" value="알림 받기" class="fit" />
+						</div>
+					</div>
+				</form>
+			</section>
+
+			<!-- Footer -->
+			<footer id="footer">
+				<ul class="icons">
+					<li><a href="https://discord.gg/Y6vDFWEWZH" class="icon brands fa-discord"><span class="label">Discord</span></a></li>
+				</ul>
+				<ul class="copyright">
+					<li>&copy; MCTSU. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+				</ul>
+			</footer>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.dropotron.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+			<script src="assets/js/get_status.js"></script>
+			<script src="assets/js/get_profile.js"></script>
+			<script>$(document).ready(check_discord(refresh_button));</script>
+			<script>$(document).ready(load_profile());</script>
+			<script>function email_notice(){
+				$.ajax({
+					url: 'verify.php',
+					type: "GET",
+					data: {action: 'notice', email: document.getElementById('email').value},
+					dataType: 'json',
+					contentType: 'application/json',
+					success: function(data){
+						if(data['status'] == 'success'){
+							alert('이메일 인증 알림을 성공적으로 등록했습니다.');
+						}
+						else{
+							alert('이메일 인증 알림을 등록하지 못했습니다. ' + data['error'][0]);
+						}
+					}
+				});
+			}</script>
+	</body>
+</html>

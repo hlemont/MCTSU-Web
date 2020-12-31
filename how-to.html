@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>Generic - Alpha by HTML5 UP</title>
+		<title>MCTSU Web</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -36,7 +36,7 @@
 								</li>
 							</ul>
 						</li>
-						<li><a href="/login.php?action=login" class="button personal" >함께하기</a></li>
+						<li><a class="button personal" ></a></li>
 					</ul>
 				</nav>
 			</header>
@@ -63,7 +63,7 @@
 					<span class="image featured"><img src="images/mcwebpage.png" height=600 style="object-fit: cover" alt="" /></span>
 
 					<a class="anchor" id="3"></a>
-					<h3>3. 서버 관리자가 등록하기를 기다리기&nbsp;<i class="icon solid register-status"></i></h3>
+					<h3>3. 서버 관리자가 등록하기를 기다리기&nbsp;<i class="icon solid verify-status"></i></h3>
 					<p>고생하셨습니다! 당신이 서버에 참여하기 위해 해야할 일은 사실상 끝났습니다. <br>마지막 남은 일은 서버 관리자가 여러분의 요청을 받아들이고 화이트리스트에 등록되길 기다리는 것 뿐입니다.</p>
 					<p>본인의 요청이 수락된 것은 이 페이지에서도 확인할 수 있지만, 필요하면 아래 양식을 작성하면 알림을 보내 드립니다. </p>
 					
@@ -78,7 +78,7 @@
 				<p>입력하신 이메일 주소로 알림 메일이 발송됩니다.<br>
 				(이메일 주소는 알림 메일이 발송된 이후 파기됩니다.)</p>
 
-				<form>
+				<form onsubmit="email_notice">
 					<div class="row gtr-50 gtr-uniform">
 						<div class="col-8 col-12-mobilep">
 							<input type="email" name="email" id="email" placeholder="Email Address" />
@@ -111,9 +111,26 @@
 		<script src="assets/js/util.js"></script>
 		<script src="assets/js/main.js"></script>
 		<script src="assets/js/get_status.js"></script>
-		<script>$(document).ready(check_status(function(data){
+		<script>$(document).ready(check_discord(function(data){
 			refresh_button(data);
 			refresh_icon_discord(data);
 		}));</script>
+		<script>function email_notice(){
+			$.ajax({
+				url: 'verify.php',
+				type: "GET",
+				data: {action: 'notice', email: document.getElementById('email').value},
+				dataType: 'json',
+				contentType: 'application/json',
+				success: function(data){
+					if(data['status'] == 'success'){
+						alert('이메일 인증 알림을 성공적으로 등록했습니다.');
+					}
+					else{
+						alert('이메일 인증 알림을 등록하지 못했습니다. ' + data['error'][0]);
+					}
+				}
+			});
+		}</script>
 	</body>
 </html>
