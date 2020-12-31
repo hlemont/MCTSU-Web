@@ -89,13 +89,14 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
         if($_GET['action'] == 'check'){
             header('Content-Type: application/json');
 
-            if(array_key_exists('access_token', $_SESSION)){
+            if(isset($_SESSION['access_token'])){
                 // refresh when access token expired: expire_date is smaller than 2 day
                 $now = new DateTime();
                 $difference = (int)($_SESSION['expire_date']->diff($now))->format("%r%d");
-                if($difference <= 1){
+                if($difference < 1){
+					error_log('refresh');
                     $token = refresh_token($_SESSION['refresh_token']);
-
+					
                     $_SESSION['access_token'] = $token['access_token'];
                     $expire_date = new DateTime();
                     $term = new DateInterval("PT{$token['expires_in']}S");
@@ -153,7 +154,7 @@ function request_token($code){
 
 function refresh_token($refresh_token){
     $token = apiRequest($GLOBALS['tokenURL'], array(
-        "grant_type" => "refresh_token",
+        'grant_type' => 'refresh_token',
         'client_id' => $GLOBALS['discord_oauth']['client_id'],
         'client_secret' => $GLOBALS['discord_oauth']['client_secret'],
         'refresh_token' => $refresh_token,
@@ -186,7 +187,11 @@ function apiRequest($url, $post=FALSE, $headers=array()) {
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     $response = curl_exec($ch);
-    return json_decode($response, true);
+	if($post){
+		error_log(http_build_query($post));
+	}
+	$json = json_decode($response, true);
+	return $json;
 }
 
 ?>
