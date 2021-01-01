@@ -45,78 +45,68 @@ function mc_name_to_uuid($mc_name){
 
 //create accounts table
 function create_accounts(){
-    $con = connect_sql();
-    $result = create_table($con, 'accounts');
-    close_sql($con);
-
+    $db = connect_sql();
+    $result = create_table($db, 'accounts');
     return $result;
 }
 
 // user operation
 function add_account($columns, $values){
-    $con = connect_sql();
-    $result = insert_record($con, 'accounts', $columns, $values);
-    close_sql($con);
+    $db = connect_sql();
+    $result = insert_record($db, 'accounts', $columns, $values);
     return $result;
 }
 
 function delete_account($id){
-    $con = connect_sql();
-    $result = delete_record($con, 'accounts', 'id=' . $id);
-    close_sql($con);
+    $db = connect_sql();
+    $result = delete_record($db, 'accounts', "id='$id'");
     return $result;
 }
 
 function update_account($id, $columns, $values){
-    $con = connect_sql();
-    $result = update_record($con, 'accounts', $columns, $values, 'id=' . $id);
-    close_sql($con);
+    $db = connect_sql();
+    $result = update_record($db, 'accounts', $columns, $values, "id='$id'");
     return $result; 
 }
 
 function select_account($conditions, $columns = [], $limit = -1){
-    $con = connect_sql();
-    $result = select_record($con, 'accounts', $columns, $conditions, $limit);
-    close_sql($con);
+    $db = connect_sql();
+    $result = select_record($db, 'users.accounts', $columns, $conditions, $limit);
     return $result;
 }
 
-function select_account_by_id($id){
-    return select_account('id=' . $id, null, 1); 
+function select_account_by_id($id, $columns = [], $limit = 1){
+    return select_account(["id='$id'"], $columns, $limit); 
 }
 
 function exist_account($id){
-    $result = !select_account_by_id($id);
+    $result = select_account_by_id($id);
     return $result;
 }
 
 // create email_notice table
 function create_email_notice(){
-    $con = connect_sql();
-    $result = create_table($con, 'email_notice');
-    close_sql($con);
+    $db = connect_sql();
+    $result = create_table($db, 'email_notice');
     return $result;
 }
 
 // email_notice table operation
 function add_notification($id, $email_addr){
-    $con = connect_sql();
-    $result = insert_record($con, 'email_notice', array('id', 'email_addr'), array($id, $email_addr));
-    close_sql($con);
+    $db = connect_sql();
+    $result = insert_record($db, 'email_notice', array('id', 'email_addr'), array("'$id'", "'$email_addr'"));
     return $result;
 }
 
 function get_notification($id){
-    $con = connect_sql();
-    $result = select_record($con, 'email_notice', array('email_notice'), 'id=' . $id);
-    close_sql($con);
+    $db = connect_sql();
+    $result = select_record($db, 'email_notice', array('email_addr'), "id='$id'");
     return $result;
 }
 
 function remove_notification($id){
-    $con = connect_sql();
-    $result = delete_record($con, 'email_notice', 'id=' . $id);
-    close_sql($con);
+    $db = connect_sql();
+    $result = delete_record($db, 'email_notice', "id='$id'");
     return $result;
 }
 

@@ -22,7 +22,7 @@
 					<ul>
 						<li><a href="index.html#interlude">홈</a></li>
 						<li>
-						<li><a class="button save-profile" ></a></li>
+						<li><a class="button personal" ></a></li>
 					</ul>
 				</nav>
 			</header>
@@ -33,23 +33,32 @@
 						<h2>프로필</h2>
 					</header>
 					<div class="box">
-						<form onsubmit="">
+						<form onsubmit="save_profile(); return false;" onreset="load_profile(); return false;">
 							<div class="row gtr-50">
 								<div class="off-3 col-6 off-2-mobilep col-8-mobilep">
 									<label for='username'><h3>닉네임</h3></label>
-									<input id='username' type='text' name='username', value="", placeholder="닉네임">
+									<input id='username' type='text' name='username' value="" placeholder="닉네임">
 								</div>
-								<div class="off-3 col-6 off-2-mobile col-8-mobilep">
+								<div class="off-3 col-6 off-2-mobilep col-8-mobilep">
 									<label for='discord_name'  style="margin-top: 3em"><h3>디스코드 닉네임</h3></label>
-									<input id='discord_name' type='text' name='discord_name', value="", placeholder="디스코드 닉네임" disabled>
+									<input id='discord_name' type='text' name='discord_name' value="" placeholder="디스코드 닉네임" disabled>
 								</div>
 								<div class="off-3 col-6 off-2-mobilep col-8-mobilep">
 									<label for='mc_name' style="margin-top: 3em"><h3>마인크래프트 닉네임</h3></label>
-									<input id='mc_name' type='text' name='mc_name', value="", placeholder="마인크래프트 닉네임">
+									<input id='mc_name' type='text' name='mc_name' value="" placeholder="마인크래프트 닉네임">
 								</div>
-								<div class="off-3 col-6 off-2-mobile col-8-mobilep">
+								<div class="off-3 col-6 off-2-mobilep col-8-mobilep">
 									<label for='twitch_name'  style="margin-top: 3em"><h3>트위치 이름</h3></label>
-									<input id='twitch_name' type='text' name='twitch_name', value="", placeholder="트위치 닉네임">
+									<input id='twitch_name' type='text' name='twitch_name' value="" placeholder="트위치 닉네임">
+								</div>
+								<div class="off-3 col-6 off-2-mobilep col-8-mobilep" style="margin-top: 3em">
+									<ul class="actions fit">
+										<li><input type="submit" value="저장"/></li>
+										<li><input type="reset" class="alt" value="취소"/></li>
+									</ul>
+								</div>
+								<div class="off-3 col-6 off-2-mobilep col-8-mobilep">
+									<a href="#" onclick="request_verify();" class='button special fit'>인증</a>
 								</div>
 							</div>
 						</form>

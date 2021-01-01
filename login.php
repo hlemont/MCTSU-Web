@@ -23,30 +23,32 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
     if(isset($_GET['location'])){
         $_SESSION['location'] = $_GET['location'];
     }
-    else if(isset($_SESSION['location'])){
+    else if(!isset($_SESSION['location'])){
         $_SESSION['location'] = '';
     }
-
+	
     // when redirected back from discord oauth authorize
     if(isset($_GET['code'])){
         $token = request_token($_GET['code']);
-        $user = discord_get_user();
-
-        if(!exist_account($user['id'])){
-            insert_account(array('id', 'discord_name', 'username', 'mc_name', 'twitch_name',  'verification_code',  'register_date'), 
-                    array($user['id'], $user['username'], $user['username'], '', '', 0, (new DateTime())->format('Y-m-d')));
-        }
-        else{
-            update_account($user['id'], array('discord_name'), array($user->username));
-        }
-
-        $_SESSION['id'] = $user['id'];
+		
         $_SESSION['access_token'] = $token['access_token'];
         $expire_date = new DateTime();
         $term = new DateInterval("PT{$token['expires_in']}S");
         $expire_date->add($term);
         $_SESSION['expire_date'] = $expire_date;
         $_SESSION['refresh_token'] = $token['refresh_token'];
+		
+        $user = discord_get_user();
+		$_SESSION['id'] = $user['id'];
+
+
+        if(!exist_account($user['id'])){
+            add_account(array('id', 'discord_name', 'username', 'mc_name', 'twitch_name',  'verification_code',  'register_date'), 
+                    array($user['id'], "'{$user['username']}'", "'{$user['username']}'", "''", "''", 0, "'" . (new DateTime())->format('Y-m-d') . "'"));
+        }
+        else{
+            update_account($user['id'], array('discord_name'), array("'{$user['username']}'"));
+        }
         
         header('Location: ' . 'https://web.mctsu.kr/' . $_SESSION['location']);
         unset($_SESSION['location']);
@@ -57,7 +59,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
 
         // login
         if($_GET['action'] == 'login'){
-            if(array_key_exists('access_token', $_SESSION)){
+            if(isset($_SESSION['access_token'])){
                 header('Content-Type: text/html');
                 echo '<script>alert("이미 로그인하셨습니다."); window.location.replace("https://web.mctsu.kr");</script>';
             }
@@ -69,20 +71,25 @@ if($_SERVER['REQUEST_METHOD'] == 'GET'){
 
         // logout
         if($_GET['action'] == 'logout') {
-            $params = array(
-                'access_token' => $_SESSION['access_token']
-            );
+			
+			if(isset($_SESSION['access_token'])){
+				$token = apiRequest('https://discord.com/api/oauth2/token/revoke', array(
+                	'access_token' => $_SESSION['access_token']
+            	));
+            	header('Location: ' . 'https://web.mctsu.kr/' . $_SESSION['location']);
 
-            $token = apiRequest('https://discord.com/api/oauth2/token/revoke', array(
-                'access_token' => $_SESSION['access_token']
-            ));
-            header('Location: ' . 'https://web.mctsu.kr/' . $_SESSION['location']);
-            unset($_SESSION['id']);
+			}
+			else{
+				header('Location: ' . 'https://web.mctsu.kr/');
+			}
+			
+			unset($_SESSION['id']);
             unset($_SESSION['access_token']);
             unset($_SESSION['expire_date']);
             unset($_SESSION['refresh_token']);
             unset($_SESSION['location']);
-            die();
+			
+			die();
         }
 
         //check
@@ -147,7 +154,7 @@ function request_token($code){
         'redirect_uri' => 'https://web.mctsu.kr/login.php',
         'code' => $code,
         'scope' => 'identify guilds'
-    ));
+    ), FALSE);
     return $token;
 }
 
@@ -168,7 +175,7 @@ function discord_get_user(){
     return apiRequest($GLOBALS['apiURLBase'] . 'users/@me');
 }
 
-function apiRequest($url, $post=FALSE, $headers=array()) {
+function apiRequest($url, $post=FALSE, $authorized=TRUE, $headers=array()) {
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -186,12 +193,11 @@ function apiRequest($url, $post=FALSE, $headers=array()) {
 
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-    $response = curl_exec($ch);
-	if($post){
-		error_log(http_build_query($post));
-	}
-	$json = json_decode($response, true);
-	return $json;
+    $response = html_entity_decode(curl_exec($ch));
+	
+	$data = json_decode($response, true);
+	error_log("API_REQUEST: " . var_export($data, true));
+	return $data;
 }
 
 ?>

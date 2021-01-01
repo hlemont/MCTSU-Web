@@ -1,39 +1,40 @@
 <?php
+
 require('users.php');
 
 session_start();
 
-if($_SERVER['REQUEST_METHOD'] == 'GET')){
-    if(!isset($_SESSION['id']){
+if($_SERVER['REQUEST_METHOD'] == 'GET'){
+    if(!isset($_SESSION['id'])){
         header('Location: ' . 'https://web.mctsu.kr/');
     }
 
     if(isset($_GET['action'])){
-        // set header: json
-        header('Content-Type: application/json');
-
         // get id
         $id = $_SESSION['id'];
 
         //load:
         // username, discord_name, mc_name, register_date, (optional)twitch_name
         if($_GET['action'] == 'load'){
+			// set header: json
+        	header('Content-Type: application/json');
+			
             // read
-            $res = $select_account_by_id($id);
+            $res = select_account_by_id($id);
             if($res){
                 $result = array(
-                    status => 'success',
-                    username => $res['username'],
-                    discord_name => $res['discord_name'],
-                    mc_name => $res['mc_name'],
-                    register_date => $res['register_date'],
-                    twitch_name => $res['twitch_name']
+                    'status' => 'success',
+                    'username' => $res['username'],
+                    'discord_name' => $res['discord_name'],
+                    'mc_name' => $res['mc_name'],
+                    'register_date' => $res['register_date'],
+                    'twitch_name' => $res['twitch_name']
                 );
             }
             else {
                 $result = array(
-                    status => 'failure',
-                    error => ['DBError', 'select']
+                    'status' => 'failure',
+                    'error' => ['DBError', 'select']
                 );
             }
 
@@ -45,6 +46,8 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')){
                     'jsonError', json_last_error_msg()
                 ));
             }
+			
+			error_log('load result: ' . $json);
             
             echo $json;
             die();
@@ -87,9 +90,9 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')){
 
             //twitch_name
             if(isset($_GET['twitch_name'])){
-                if(preg_match("/^[a-zA-Z0-9][\w]{3,24}$/s"), $_GET['twitch_name']){
+                if(preg_match("/^[a-zA-Z0-9][\w]{3,24}$/s", $_GET['twitch_name'])){
                     // when valid
-                    $values['twitch_name'] = $_GET['mc_name'];
+                    $values['twitch_name'] = $_GET['twitch_name'];
                 }
                 else {
                     // when invalid
@@ -108,7 +111,7 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')){
 
                     if(isset($values['mc_name'])){
                         $res = select_account_by_id($id);
-                        if($res){
+                        if(!$res){
                             throw new dbError('select');
                         }
                         
@@ -121,27 +124,27 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')){
                     }
 
                     $result = array(
-                        status => 'success'
+                        'status' => 'success'
                     );
                 }
                 catch (dbError $e){
                     $result = array(
-                        status => 'failure',
-                        error => ['DBError', $e->getMessage()]
+                        'status' => 'failure',
+                        'error' => ['DBError', $e->getMessage()]
                     );
                 }
             }
             else{
                 if($invalid != null){
                     $result = array(
-                        status => 'failure',
-                        error => ['FormatError', $invalid]
+                        'status' => 'failure',
+                        'error' => ['FormatError', $invalid]
                     );
                 }
                 else{
                     $result = array(
-                        status => 'failure',
-                        error => ['EmptyInputError']
+                        'status' => 'failure',
+                        'error' => ['EmptyInputError']
                     );
                 }
             }
@@ -173,36 +176,37 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')){
                 // status 1: waiting for verification
                 if($verification == 1){
                     $result = array(
-                        status => 'failure',
-                        error => 'waiting'
+                        'status' => 'failure',
+                        'error' => 'waiting'
                     );
                 }
 
                 // status 2: already verified
                 if($verification == 2){
                     $result = array(
-                        status => 'failure', 
-                        error => 'verified'
+                        'status' => 'failure', 
+                        'error' => 'verified'
                     );
                 }
             }
             else if($mc_name == null){
                 $result = array(
-                    status => 'failure',
-                    error => 'mc_name_not_specified'
+                    'status' => 'failure',
+                    'error' => 'mc_name_not_specified'
                 );
             }
             else {
                 if(update_account($id, array('verification_code'), array(1))){
                     $result = array(
-                        status => 'success'
+                        'status' => 'success'
                     );
 
                     // send verify request to admin
                     $params = array(
-                        action => 'request',
-                        secret => 'McseKretTsuaDmiNi'
-                    )
+                        'action' => 'request',
+                        'secret' => 'McseKretTsuaDmiNi'
+                    );
+					
                     $ch = curl_init("mail.php");
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                     curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -216,14 +220,14 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')){
                             error_log('successfully send verify request to admin');
                         }
                         else{
-                            error_log('failed to send verify request to admin: ' implode('/', $result->error));
+                            error_log('failed to send verify request to admin: ' . implode('/', $result->error));
                         }
                     }
                 }
                 else {
                     $result = array(
-                        status => 'failure',
-                        error => ['DBError', 'update']
+                        'status' => 'failure',
+                        'error' => ['DBError', 'update']
                     );
                 }
             }
@@ -249,21 +253,22 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')){
             if($verification != '0'){
                 if(update_account($id, array('verification_code'), array(0))){
                     $result = array(
-                        status => 'success'
+                        'status' => 'success'
                     );
                 }
                 else {
                     $result = array(
-                        status => 'failure',
-                        error => ['DBError', 'update']
+                        'status' => 'failure',
+                        'error' => ['DBError', 'update']
                     );
                 }
             }
             else{
                 $result = array(
-                    status => 'failure',
-                    error => ['StateError', 'not verified or waiting']
-            };
+                    'status' => 'failure',
+                    'error' => ['StateError', 'not verified or waiting']
+				);
+            }
 
             $json = json_encode($result);
             if($json === false){
@@ -283,14 +288,14 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')){
             $res = $select_account_by_id($id);
             if($res){
                 $result = array(
-                    status => 'failure',
-                    is_valid => $res['mc_name'] != null
+                    'status' => 'failure',
+                    'is_valid' => $res['mc_name'] != null
                 );
             }
             else {
                 $result = array(
-                    status => 'failure',
-                    error => ['DBError', 'select']
+                    'status' => 'failure',
+                    'error' => ['DBError', 'select']
                 );
             }
 
@@ -311,14 +316,14 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')){
             $res = $select_account_by_id($id);
             if($res){
                 $result = array(
-                    status => 'success',
-                    verification_code => $res['verification_code']
+                    'status' => 'success',
+                    'verification_code' => $res['verification_code']
                 );
             }
             else {
                 $result = array(
-                    status => 'failure',
-                    error => ['DBError', 'select']
+                    'status '=> 'failure',
+                    'error' => ['DBError', 'select']
                 );
             }
 

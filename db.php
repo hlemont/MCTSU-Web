@@ -1,102 +1,101 @@
 <?php
-$database_host = "localhost";
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+$dsn = "mysql:host=localhost;port=3306;dbname=users;charset=utf8";
 $database_username = "hlemont01";
 $database_password = "4x104ObktXor6wmH";
-$database_db = "users";
 
 function connect_sql(){
-    $con = mysqli_connect($GLOBALS["database_host"], $GLOBALS["database_username"], $GLOBALS["database_password"], $GLOBALS["database_db"]);
+    try{
+        $db = new PDO($dsn, $GLOBALS['database_username'], $GLOBALS['database_password']);
+        $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    } catch(PDOException $d){
+        error_log('Failed to connect to MySQL:' . $e->getMessage());
+    }
     
-    if (mysqli_connect_errno())
-    {
-        error_log("Failed to connect to MySQL: ". mysqli_connect_error());
-    }
-
-    return $con;
+    return $db;
 }
-
-function close_sql($con){
-    mysqli_close($con);
-}
-
-function enter_query($con, $query){
-    $result = mysqli_query($con, $query);
-    if($result){
-        log("Query succeed: {$query}");
-    }
-    else{
-        error_log("Query failed: '{$query}' with error: " . mysqli_error($con));
-    }
-    return $result;
-}
-
 
 // database
-function create_db($con, $dbname){
+function create_db($db, $dbname){
     $query = "CREATE DATABASE IF NOT EXISTS {$dbname}";
-    $result = enter_query($con, $query);
-    return $result;
+    $stmt = $db->prepare($query);
+    return $stmt->execute();
 }
 
-function delete_db($con, $dbname){
+function delete_db($db, $dbname){
     $query = "DELETE DATABASE {$dbname}";
-    $res = enter_query($con, $query);
-    return $result;
+    $stmt = $db->prepare($query);
+    return $stmt->execute();
 }
 
-function use_db($con, $dbname){
+function use_db($db, $dbname){
     $query = "USE {$dbname}";
-    $result = enter_query($con, $query);
-    return $result;
+    $stmt = $db->prepare($query);
+    return $stmt->execute();
 }
 
-function exist_db($con, $dbname){
+function exist_db($db, $dbname){
     $query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '\${$dbname}'";
-    $result = enter_query($con, $query);
-    return mysqli_num_rows($result) == 0;
+    $stmt = $db->prepare($query);
+    return $stmt->execute();
 }
 
 // table
-function create_table($con, $table){
+function create_table($db, $table){
     $query = "CREATE TABLE IF NOT EXISTS {$table}";
-    $result = enter_query($con, $query);
-    return $result;
+    $stmt = $db->prepare($query);
+    return $stmt->execute();
 }
 
-function delete_table($con, $table){
+function delete_table($db, $table){
     $query = "DELETE TABLE {$table}";
-    $result = enter_query($con, $query);
-    return $result;
+    $stmt = $db->prepare($query);
+    return $stmt->execute();
 }
 
-function exist_table($con, $table){
+function exist_table($db, $table){
     $query = "SHOW TABLES LIKE '\${$table}";
-    $result = enter_query($con, $query);
-    return mysqli_num_rows($result);
+    $stmt = $db->prepare($query);
+    if($stmt->execute()){
+        $rows = $stmt->fetchAll();
+        return count($rows) > 0;
+    }
+    else{
+        return FALSE;
+    }
 }
 
 
 // column
-function create_column($con, $table, $columnname, $datatype){
+function create_column($db, $table, $columnname, $datatype){
     $query = "ALTER TABLE {$table} ADD {$columnname} {$datatype}";
-    $result = enter_query($con, $query);
-    return $result;
+    $stmt = $db->prepare($query);
+    return $stmt->execute();
 }
 
-function drop_column($con, $table, $columnname){
+function drop_column($db, $table, $columnname){
     $query = "ALTER TABLE {$table} DROP COLUMN {$columnname}";
-    $result = enter_query($con, $query);
-    return $result;
+    $stmt = $db->prepare($query);
+    return $stmt->execute();
 }
 
-function exist_column($con, $table, $columnname){
+function exist_column($db, $table, $columnname){
     $query = "SHOW COLUMNS FROM {$table} LIKE '\${$columnname}'";
-    $result = enter_query($con, $query);
-    return mysqli_num_rows($result);
+    $stmt = $db->prepare($query);
+    if($stmt->execute()){
+        $rows = $stmt->fetchAll();
+        return count($rows) > 0;
+    }
+    else{
+        return FALSE;
+    }
 }
 
 // records
-function insert_record($con, $table, $columns, $values){
+function insert_record($db, $table, $columns, $values){
     if($columns == NULL || $values == NULL){
         return FALSE;
     }
@@ -104,11 +103,11 @@ function insert_record($con, $table, $columns, $values){
     $value_formatted = implode(", ", $values);
     
     $query = "INSERT INTO {$table} ({$column_formatted}) VALUES ({$value_formatted})";
-    $result = enter_query($con, $query);
-    return $result; 
+    $stmt = $db->prepare($query);
+    return $stmt->execute();
 }
 
-function update_record($con, $table, $columns, $values, $conditions = ''){
+function update_record($db, $table, $columns, $values, $conditions = ''){
     $pairs = [];
     $i = 0;
 
@@ -121,39 +120,42 @@ function update_record($con, $table, $columns, $values, $conditions = ''){
     if($conditions == NULL){
         $query = $query . "WHERE {$conditions}";
     }
-    $result = enter_query($con, $query);
-    return $result; 
+    $stmt = $db->prepare($query);
+    return $stmt->execute();
 }
 
-function delete_record($con, $table, $conditions){
+function delete_record($db, $table, $conditions){
     $query = "DELETE FROM {$table} ";
     if($conditions == NULL){
         $query = $query . "WHERE {$conditions}";
     }
-    $result = enter_query($con, $query);
-    return $result; 
+    $stmt = $db->prepare($query);
+    return $stmt->execute();
 }
 
-function select_record($con, $table, $columns=[], $conditions='', $limit=-1){
+function select_record($db, $table, $columns=[], $conditions='', $limit=-1){
     if($columns == NULL){
-        $column_formatted = '*';
+        $column_formatted = '*'; 
     }
     else{
         $column_formatted = implode(", ", $columns);
     }
 
-    $query = "SELECT {$column_formatted} FROM {$table}";
+    $query = "SELECT {$column_formatted} FROM {$table} ";
     if($conditions != NULL){
-        $query = $query . "WHERE {$conditions} ";
+        $query = $query . "WHERE " . implode(' AND ', $conditions) . " ";
     }
     if($limit != -1){
         $query = $query . "LIMIT $limit";
     }
 
-    $result = enter_query($con, $query);    
+    $stmt = $db->prepare($query);
 
-    if($result)
-        return $result -> fetch_array();
+    if($stmt->execute()){
+        $data = $stmt->fetchAll();
+        error_log(var_export($data));
+		return $data;
+	}
     else
         return FALSE;
 }
